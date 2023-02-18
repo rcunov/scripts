@@ -1,0 +1,10 @@
+{
+  "content": "Torrent downloaded.",
+  "embeds": [
+    {
+      "title": "torrentTitle",
+      "description": "torrentDescription",
+      "color": 3715072
+    }
+  ]
+}

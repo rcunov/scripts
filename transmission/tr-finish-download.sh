@@ -8,22 +8,31 @@
 # You'll need to give this script access to your Discord webhook URL (used in this script
 # as the $dcWebhookUrl var). You could store it in your .env file with this script, like 
 # dcWebhookUrl=http://example.com and then pull it in with following command:
-# source .env
+#source .env
 
 # Or if you're running Transmission in a Docker container, you can pass it in as an
 # environment variable through the Docker CLI or Docker Compose and use it that way.
 
+# Establish location of script so it can be called from anywhere using relative paths
+scriptLoc=$(dirname -- "$(readlink -f -- "$BASH_SOURCE")")
+echo "scriptLoc: $scriptLoc"
+
 # Make size of torrent human readable
 torrentDescription="Size: $(numfmt --to=iec $TR_TORRENT_BYTES_DOWNLOADED)"
+echo "torrentDescription= $torrentDescription"
 
 # Set post title
 torrentTitle="Name: $TR_TORRENT_NAME"
+echo "torrentTitle= $torrentTitle"
 
 # Read example JSON in, change values based on variables defined, and output to file 
-jq --arg torrentTitle "${torrentTitle}" --arg torrentDescription "${torrentDescription}" \  # Set jq args
-  '.embeds[0].title = $torrentTitle | .embeds[0].description = $torrentDescription' \  # Replace values with variables
-  example.json > /tmp/dcPayload.json  # Read from example.json and store output into /tmp/dcPayload.json
-                                      # because curl plays nicer with weird characters when it reads from file
+jq --arg torrentTitle "${torrentTitle}" --arg torrentDescription "${torrentDescription}" \
+  '.embeds[0].title = $torrentTitle | .embeds[0].description = $torrentDescription' \
+  $scriptLoc/example.json > $scriptLoc/dcPayload.json
+# Reading from a file negates the need to use escape characters, which makes things 100x easier
 
-# Send payload to Discord webhook
-curl -H "Content-Type: application/json" -d @/tmp/dcPayload.json $dcWebhookUrl
+# Read JSON data from file and send to Discord webhook
+curl -H "Content-Type: application/json" -d @$scriptLoc/dcPayload.json $dcWebhookUrl
+
+# Get rid of old webhook data
+rm -f $scriptLoc/dcPayload.json

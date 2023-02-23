@@ -28,7 +28,7 @@ echo "torrentTitle= $torrentTitle"
 # Read example JSON in, change values based on variables defined, and output to file 
 jq --arg torrentTitle "${torrentTitle}" --arg torrentDescription "${torrentDescription}" \
   '.embeds[0].title = $torrentTitle | .embeds[0].description = $torrentDescription' \
-  $scriptLoc/example.json > $scriptLoc/dcPayload.json
+   $scriptLoc/example.json > $scriptLoc/dcPayload.json
 # Reading from a file negates the need to use escape characters, which makes things 100x easier
 
 # Read JSON data from file and send to Discord webhook
